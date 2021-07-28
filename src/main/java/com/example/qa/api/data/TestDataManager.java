@@ -1,4 +1,3 @@
 package com.example.qa.api.data;
 
-public class TestDataManager {
-}
+public class TestDataManager {}
