@@ -4,18 +4,21 @@ import com.example.qa.api.TestException;
 
 import java.util.Arrays;
 
-public enum RequestSpecs {
+public enum RestSpecs {
   PARAM("parameter"),
-  URI("uri");
+  URI("uri"),
+  HEADER("header"),
+  JSON_PATH("jsonPath"),
+  XML_PATH("xPath");
 
   private final String restAssuredKey;
 
-  RequestSpecs(String restAssuredKey) {
+  RestSpecs(String restAssuredKey) {
     this.restAssuredKey = restAssuredKey;
   }
 
-  public static RequestSpecs getRequestConfig(String value) {
-    return Arrays.stream(RequestSpecs.values())
+  public static RestSpecs getRequestConfig(String value) {
+    return Arrays.stream(RestSpecs.values())
         .filter(requestSpecs -> requestSpecs.restAssuredKey.equalsIgnoreCase(value))
         .findFirst()
         .orElseThrow(() -> new TestException("%s is not a valid rest config", value));

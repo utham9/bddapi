@@ -11,9 +11,10 @@ public class PropertyManager {
   private static final Map<PropertyKey, Properties> PROPERTIES_MAP =
       new HashMap<PropertyKey, Properties>() {
         {
+          put(PropertyKey.JVM, JVMProperties.getValues());
           put(PropertyKey.GLOBAL, FileOperations.getProperties("global.properties"));
           put(PropertyKey.DB, FileOperations.getProperties("db.properties"));
-          put(PropertyKey.JVM, JVMProperties.getValues());
+          put(PropertyKey.ENVIRONMENT, Environment.getEnvironmentProperties());
         }
       };
 
@@ -37,9 +38,14 @@ public class PropertyManager {
     PROPERTIES_MAP.get(propertyKey).setProperty(key, value);
   }
 
+  public static void environment() {
+    String env = PropertyManager.getProperty(PropertyKey.JVM, "env");
+  }
+
   public enum PropertyKey {
     GLOBAL,
     JVM,
+    ENVIRONMENT,
     DB
   }
 }

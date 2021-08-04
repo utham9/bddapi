@@ -67,7 +67,11 @@ public class RestClient {
             .enableLoggingOfRequestAndResponseIfValidationFails();
     RestAssuredConfig restAssuredConfig = RestAssuredConfig.config().logConfig(logConfig);
     RequestSpecification given =
-        RestAssured.given().config(restAssuredConfig).relaxedHTTPSValidation().log().everything();
+        RestAssured.given()
+            .config(restAssuredConfig)
+            .relaxedHTTPSValidation()
+            .log()
+            .ifValidationFails();
     return given;
   }
 

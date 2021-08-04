@@ -20,7 +20,7 @@ public class JVMProperties {
     Properties properties = new Properties();
     // Add all the system props you need to read here
     KEYS.add("TEST_TYPE");
-
+    KEYS.add("env");
     KEYS.forEach(e -> properties.setProperty(e, System.getProperty(e, "")));
     return properties;
   }
