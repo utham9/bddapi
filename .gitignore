@@ -48,6 +48,15 @@ Thumbs.db
 /build
 */build
 
+# Reports directies #
+##########################
+/allure-results
+*/allure-results
+/reports
+*/reports
+/Reports
+*/Reports
+
 # IntelliJ specific files/directories #
 #######################################
 out
