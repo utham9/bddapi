@@ -6,12 +6,23 @@ import java.util.Map;
 
 public class CacheManager {
 
-  private static CacheManager instance;
   private static final Object monitor = new Object();
+  private static CacheManager instance;
   private final Map<String, Object> cache =
       Collections.synchronizedMap(new HashMap<String, Object>());
 
   private CacheManager() {}
+
+  public static CacheManager getInstance() {
+    if (instance == null) {
+      synchronized (monitor) {
+        if (instance == null) {
+          instance = new CacheManager();
+        }
+      }
+    }
+    return instance;
+  }
 
   public void put(String cacheKey, Object value) {
     cache.put(cacheKey, value);
@@ -31,16 +42,5 @@ public class CacheManager {
 
   public void clear() {
     cache.clear();
-  }
-
-  public static CacheManager getInstance() {
-    if (instance == null) {
-      synchronized (monitor) {
-        if (instance == null) {
-          instance = new CacheManager();
-        }
-      }
-    }
-    return instance;
   }
 }

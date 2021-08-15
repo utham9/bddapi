@@ -1,14 +1,20 @@
 package com.example.qa.api.utils;
 
 import com.example.qa.api.TestException;
+import com.example.qa.api.data.CacheManager;
+import com.example.qa.api.models.TextConstants;
+import com.example.qa.api.properties.PropertyManager;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 public class FileOperations {
@@ -60,5 +66,46 @@ public class FileOperations {
     } catch (Exception e) {
       throw new TestException(e.getMessage(), e);
     }
+  }
+
+  public static String generateReportFolder() {
+    if (!CacheManager.getInstance().contains(TextConstants.REPORT_PATH_KEY)) {
+      String reportFolder =
+          PropertyManager.getProperty(PropertyManager.PropertyKey.EXTENT, "basefolder.name");
+      String dateTimeFormat =
+          PropertyManager.getProperty(
+              PropertyManager.PropertyKey.EXTENT, "basefolder.datetimepattern");
+      String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat));
+      String reportPath = reportFolder + "-" + date;
+      createDirectory(reportPath);
+      CacheManager.getInstance().put(TextConstants.REPORT_PATH_KEY, reportPath);
+      return reportPath;
+    }
+    return (String) CacheManager.getInstance().get(TextConstants.REPORT_PATH_KEY);
+  }
+
+  public static String generateRRPairFolder() {
+    String rrPairPath = generateReportFolder() + TextConstants.RRPAIR_FOLDER_NAME;
+    createDirectory(rrPairPath);
+    return rrPairPath;
+  }
+
+  public static void createDirectory(String paths) {
+    File directory = new File(paths);
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+  }
+
+  public static File getUniqueFileName(String folderName, String searchedFilename) {
+    int num = 1;
+    String extension = "." + StringUtils.substringAfterLast(searchedFilename, ".");
+    String filename = searchedFilename.substring(0, searchedFilename.lastIndexOf("."));
+    File file = new File(folderName, searchedFilename);
+    while (file.exists()) {
+      searchedFilename = filename + "-" + (num++) + extension;
+      file = new File(folderName, searchedFilename);
+    }
+    return file;
   }
 }

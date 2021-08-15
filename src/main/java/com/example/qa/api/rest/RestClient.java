@@ -26,7 +26,9 @@ import java.util.stream.Stream;
 
 public class RestClient {
 
-  private static final ExclusionStrategy EXCLUSION_STRATEGY =
+  private static RestClient restClient = null;
+  private static LogFilter logFilter;
+  private final ExclusionStrategy EXCLUSION_STRATEGY =
       new ExclusionStrategy() {
         @Override
         public boolean shouldSkipField(FieldAttributes fieldAttributes) {
@@ -38,36 +40,67 @@ public class RestClient {
           return false;
         }
       };
-  private static final Gson GSON =
+  private final Gson GSON =
       new GsonBuilder()
           .addSerializationExclusionStrategy(EXCLUSION_STRATEGY)
           .excludeFieldsWithModifiers(Modifier.STATIC)
           .setPrettyPrinting()
           .create();
-  public static String PROXY_HOST =
+  public String PROXY_HOST =
       PropertyManager.getProperty(PropertyManager.PropertyKey.GLOBAL, "proxy.host");
-  public static Integer PROXY_PORT =
+  public Integer PROXY_PORT =
       Integer.parseInt(
           PropertyManager.getProperty(PropertyManager.PropertyKey.GLOBAL, "proxy.port"));
-  public static String PROXY_USER =
+  public String PROXY_USER =
       PropertyManager.getProperty(PropertyManager.PropertyKey.GLOBAL, "proxy.user");
-  public static String PROXY_PASSWORD =
+  public String PROXY_PASSWORD =
       PropertyManager.getProperty(PropertyManager.PropertyKey.GLOBAL, "proxy.password");
+  private RequestSpecification requestSpecification;
 
-  public static ProxySpecification getProxySpecification() {
+  public RestClient() {
+    clearFilters();
+    logFilter = new LogFilter();
+    this.requestSpecification = RestAssured.given().filter(logFilter);
+  }
+
+  public static RestClient getInstance() {
+    if (restClient == null) {
+      restClient = new RestClient();
+    }
+    return restClient;
+  }
+
+  public static LogFilter getLogFilter() {
+    return logFilter;
+  }
+
+  public static RestClient reset() {
+    getInstance().requestSpecification = null;
+    restClient = null;
+    return getInstance();
+  }
+
+  public static void clearFilters() {
+    List<Filter> filters = RestAssured.filters();
+    if (filters.size() >= 1) {
+      RestAssured.filters().clear();
+    }
+  }
+
+  public ProxySpecification getProxySpecification() {
     return ProxySpecification.auth(PROXY_USER, PROXY_PASSWORD)
         .withHost(PROXY_HOST)
         .withPort(PROXY_PORT);
   }
 
-  public static RequestSpecification given() {
+  public RequestSpecification given() {
     LogConfig logConfig =
         LogConfig.logConfig()
             .enablePrettyPrinting(true)
             .enableLoggingOfRequestAndResponseIfValidationFails();
     RestAssuredConfig restAssuredConfig = RestAssuredConfig.config().logConfig(logConfig);
     RequestSpecification given =
-        RestAssured.given()
+        requestSpecification
             .config(restAssuredConfig)
             .relaxedHTTPSValidation()
             .log()
@@ -75,7 +108,7 @@ public class RestClient {
     return given;
   }
 
-  public static List<Filter> logFilter(Pair<ByteArrayOutputStream, PrintStream> pair) {
+  public List<Filter> logFilter(Pair<ByteArrayOutputStream, PrintStream> pair) {
     PrintStream ps = pair.getRight();
     return Stream.of(
             new RequestLoggingFilter(LogDetail.ALL, ps),
@@ -83,7 +116,7 @@ public class RestClient {
         .collect(Collectors.toList());
   }
 
-  public static Gson gson() {
+  public Gson gson() {
     return GSON;
   }
 }

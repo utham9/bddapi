@@ -14,11 +14,12 @@ public class PropertyManager {
           put(PropertyKey.JVM, JVMProperties.getValues());
           put(PropertyKey.GLOBAL, FileOperations.getProperties("global.properties"));
           put(PropertyKey.DB, FileOperations.getProperties("db.properties"));
+          put(PropertyKey.EXTENT, FileOperations.getProperties("extent.properties"));
           put(PropertyKey.ENVIRONMENT, Environment.getEnvironmentProperties());
         }
       };
 
-  public static Properties getProperty(PropertyKey propertyKey) {
+  public static Properties getProperties(PropertyKey propertyKey) {
     return PROPERTIES_MAP.get(propertyKey);
   }
 
@@ -46,6 +47,7 @@ public class PropertyManager {
     GLOBAL,
     JVM,
     ENVIRONMENT,
+    EXTENT,
     DB
   }
 }

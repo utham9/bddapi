@@ -9,6 +9,8 @@ public enum RestSpecs {
   URI("uri"),
   HEADER("header"),
   JSON_PATH("jsonPath"),
+  BODY("body"),
+  CONTENT_TYPE("body"),
   XML_PATH("xPath");
 
   private final String restAssuredKey;

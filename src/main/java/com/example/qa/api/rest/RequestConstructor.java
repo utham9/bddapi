@@ -1,18 +1,23 @@
 package com.example.qa.api.rest;
 
+import com.example.qa.api.models.TextConstants;
 import com.example.qa.api.properties.PropertyManager;
+import com.example.qa.api.reports.Reporter;
+import com.example.qa.api.utils.FileOperations;
 import com.google.common.base.Preconditions;
 import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 public class RequestConstructor {
-  private final RequestSpecification requestSpecification = RestClient.given();
+  private RequestSpecification requestSpecification;
 
   public RequestSpecification generateRequest(List<Map<String, String>> maps) {
+    requestSpecification = RestClient.reset().given();
     maps.forEach(e -> configure(e));
     return requestSpecification;
   }
@@ -29,6 +34,19 @@ public class RequestConstructor {
         break;
       case HEADER:
         requestSpecification.header(new Header(specs.get("key"), specs.get("value")));
+        break;
+      case CONTENT_TYPE:
+        requestSpecification.contentType(resolve(specs.get("value")));
+        break;
+      case BODY:
+        File requestFile =
+            FileOperations.getUniqueFileName(
+                FileOperations.generateRRPairFolder(), "serviceName" + "-req.txt");
+        String body = resolve(specs.get("value"));
+        FileOperations.save(requestFile, body);
+        Reporter.attach(
+            TextConstants.RRPAIR_REPORT_PATH + requestFile.getName(), requestFile.getName());
+        requestSpecification.body(body);
         break;
     }
   }
