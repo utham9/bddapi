@@ -2,7 +2,7 @@ Feature: Weather API
 
   Background: User has an api key
    # Given generate api key
-
+@smoke
   Scenario Outline: Get current weather API successful response
     Given request with parameters
       | resourceType | key   | value                            |

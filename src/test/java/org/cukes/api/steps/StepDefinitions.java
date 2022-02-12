@@ -7,6 +7,9 @@ import com.example.qa.api.rest.RequestConstructor;
 import com.example.qa.api.rest.ResponseValidator;
 import com.example.qa.api.utils.FileOperations;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -24,6 +27,7 @@ public class StepDefinitions {
   private final Reporter reporter = new Reporter();
   private Response response;
   private RequestSpecification requestSpecification;
+
 
   @Given("request with parameters")
   public void request_with_parameters(DataTable dataTable) {

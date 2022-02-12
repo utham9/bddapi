@@ -2,8 +2,8 @@ Feature: Weather -2 API
 
   Background: User has an api key
    # Given generate api key
-
-  Scenario Outline: Get current weather API successful response
+  @smoke
+  Scenario Outline: Get current weather
     Given request with parameters
       | resourceType | key   | value                            |
       | parameter    | q     | <city>                           |
